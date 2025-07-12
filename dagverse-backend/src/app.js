@@ -1,12 +1,14 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const session = require('express-session');
-const Redis = require('redis');
-const RedisStore = require('connect-redis')(session);
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import session from 'express-session';
+import { createClient } from 'redis';
+import { RedisStore } from 'connect-redis';
+
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -14,7 +16,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-const redisClient = Redis.createClient({ url: process.env.REDIS_URL });
+const redisClient = createClient({ 
+  url: process.env.REDIS_URL,
+  legacyMode: true
+});
 redisClient.connect().catch(console.error);
 
 app.use(cors());
@@ -28,6 +33,8 @@ app.use(
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
   })
 );
+
+app.use('/api/auth', authRoutes);
 
 // Add your route imports and use statements here
 
