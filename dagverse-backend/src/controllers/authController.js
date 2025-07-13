@@ -44,7 +44,7 @@ export const walletChallenge = (req, res) => {
 export const walletVerify = async (req, res) => {
   const { walletAddress, signature, challenge } = req.body;
   try {
-    const recovered = ethers.utils.verifyMessage(challenge, signature);
+    const recovered = ethers.verifyMessage(challenge, signature);
     if (recovered.toLowerCase() !== walletAddress.toLowerCase()) {
       return res.status(401).json({ error: 'Invalid signature' });
     }

@@ -9,6 +9,7 @@ import { createClient } from 'redis';
 import { RedisStore } from 'connect-redis';
 
 import authRoutes from './routes/auth.js';
+import userRoutes from './routes/user.js';
 
 dotenv.config();
 
@@ -35,6 +36,12 @@ app.use(
 );
 
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'DAGVerse Backend is running' });
+});
 
 // Add your route imports and use statements here
 

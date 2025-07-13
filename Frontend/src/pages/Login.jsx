@@ -11,7 +11,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,21 +27,38 @@ const Login = () => {
     setError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      let result;
       
-      // For demo purposes, accept any email/password
-      const userData = {
-        id: 1,
-        email: formData.email,
-        name: formData.email.split('@')[0],
-        avatar: `https://ui-avatars.com/api/?name=${formData.email.split('@')[0]}&background=6366f1&color=fff`
-      };
+      if (isRegistering) {
+        // Registration
+        result = await register({
+          username: formData.email.split('@')[0], // Use email prefix as username
+          email: formData.email,
+          password: formData.password
+        });
+        
+        if (result.success) {
+          // After successful registration, log in
+          result = await login({
+            email: formData.email,
+            password: formData.password
+          });
+        }
+      } else {
+        // Login
+        result = await login({
+          email: formData.email,
+          password: formData.password
+        });
+      }
 
-      login(userData);
-      navigate('/dashboard');
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Authentication failed');
+      }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError(err.message || 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -74,6 +91,24 @@ const Login = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {isRegistering && (
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  value={formData.email.split('@')[0]}
+                  readOnly
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 transition-all"
+                  placeholder="Username (auto-generated)"
+                />
+              </div>
+            )}
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address
@@ -135,7 +170,7 @@ const Login = () => {
 
         {/* Demo Info */}
         <div className="text-center text-gray-400 text-sm">
-          <p>Demo: Use any email and password to sign in</p>
+          <p>Connected to DAGVerse Backend API</p>
         </div>
       </div>
     </div>

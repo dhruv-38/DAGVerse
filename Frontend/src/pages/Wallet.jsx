@@ -1,31 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../utils/AuthContext';
 import { Link } from 'react-router-dom';
+import apiService from '../services/api.js';
 
 const Wallet = () => {
   const { walletConnected, connectWallet, disconnectWallet } = useAuth();
   const [connecting, setConnecting] = useState(false);
-  const [walletAddress, setWalletAddress] = useState('0x1234...5678');
-
-  // Mock wallet data
-  const walletData = {
-    balance: '2,450.75',
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletData, setWalletData] = useState({
+    balance: '0',
     currency: 'DAG',
-    usdValue: '$12,253.75',
-    transactions: [
-      { id: 1, type: 'received', amount: '+500 DAG', from: '0xabcd...efgh', time: '2 hours ago' },
-      { id: 2, type: 'sent', amount: '-150 DAG', to: '0x1234...5678', time: '1 day ago' },
-      { id: 3, type: 'received', amount: '+750 DAG', from: '0x9876...5432', time: '3 days ago' }
-    ]
+    usdValue: '$0.00',
+    transactions: []
+  });
+  const [loading, setLoading] = useState(false);
+
+  // Load wallet data when connected
+  useEffect(() => {
+    if (walletConnected) {
+      loadWalletData();
+    }
+  }, [walletConnected]);
+
+  const loadWalletData = async () => {
+    setLoading(true);
+    try {
+      // In a real app, you'd fetch actual wallet data from the backend
+      // For now, we'll use mock data
+      const mockData = {
+        balance: '2,450.75',
+        currency: 'DAG',
+        usdValue: '$12,253.75',
+        transactions: [
+          { id: 1, type: 'received', amount: '+500 DAG', from: '0xabcd...efgh', time: '2 hours ago' },
+          { id: 2, type: 'sent', amount: '-150 DAG', to: '0x1234...5678', time: '1 day ago' },
+          { id: 3, type: 'received', amount: '+750 DAG', from: '0x9876...5432', time: '3 days ago' }
+        ]
+      };
+      
+      setWalletData(mockData);
+    } catch (error) {
+      console.error('Failed to load wallet data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleConnectWallet = async () => {
     setConnecting(true);
     try {
-      // Simulate wallet connection
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const result = connectWallet();
-      setWalletAddress(result.address);
+      // Generate a mock wallet address for demo
+      const mockAddress = '0x' + Math.random().toString(16).substr(2, 40);
+      
+      const result = await connectWallet(mockAddress);
+      if (result.success) {
+        setWalletAddress(result.address);
+      } else {
+        console.error('Wallet connection failed:', result.error);
+      }
     } catch (error) {
       console.error('Failed to connect wallet:', error);
     } finally {
@@ -35,7 +67,13 @@ const Wallet = () => {
 
   const handleDisconnectWallet = () => {
     disconnectWallet();
-    setWalletAddress('0x1234...5678');
+    setWalletAddress('');
+    setWalletData({
+      balance: '0',
+      currency: 'DAG',
+      usdValue: '$0.00',
+      transactions: []
+    });
   };
 
   const getTransactionIcon = (type) => {
@@ -118,23 +156,29 @@ const Wallet = () => {
         {walletConnected && (
           <div className="bg-white/5 backdrop-blur-lg rounded-xl p-8 border border-white/10 mb-8">
             <h3 className="text-xl font-semibold text-white mb-6">Wallet Balance</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <p className="text-gray-300 text-sm mb-2">DAG Balance</p>
-                <p className="text-3xl font-bold text-white">{walletData.balance}</p>
-                <p className="text-gray-400 text-sm">{walletData.currency}</p>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
               </div>
-              <div className="text-center">
-                <p className="text-gray-300 text-sm mb-2">USD Value</p>
-                <p className="text-3xl font-bold text-white">{walletData.usdValue}</p>
-                <p className="text-green-400 text-sm">+5.2% today</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <p className="text-gray-300 text-sm mb-2">DAG Balance</p>
+                  <p className="text-3xl font-bold text-white">{walletData.balance}</p>
+                  <p className="text-gray-400 text-sm">{walletData.currency}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-gray-300 text-sm mb-2">USD Value</p>
+                  <p className="text-3xl font-bold text-white">{walletData.usdValue}</p>
+                  <p className="text-green-400 text-sm">+5.2% today</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-gray-300 text-sm mb-2">Network</p>
+                  <p className="text-3xl font-bold text-white">DAG</p>
+                  <p className="text-green-400 text-sm">Connected</p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-gray-300 text-sm mb-2">Network</p>
-                <p className="text-3xl font-bold text-white">DAG</p>
-                <p className="text-green-400 text-sm">Connected</p>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -148,31 +192,37 @@ const Wallet = () => {
               </button>
             </div>
             
-            <div className="space-y-4">
-              {walletData.transactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                      <span className="text-lg">{getTransactionIcon(tx.type)}</span>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {walletData.transactions.map((tx) => (
+                  <div key={tx.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <span className="text-lg">{getTransactionIcon(tx.type)}</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">
+                          {tx.type === 'received' ? 'Received from' : 'Sent to'} {tx.type === 'received' ? tx.from : tx.to}
+                        </p>
+                        <p className="text-gray-400 text-sm">{tx.time}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-white font-medium">
-                        {tx.type === 'received' ? 'Received from' : 'Sent to'} {tx.type === 'received' ? tx.from : tx.to}
+                    <div className="text-right">
+                      <p className={`font-semibold ${getTransactionColor(tx.type)}`}>
+                        {tx.amount}
                       </p>
-                      <p className="text-gray-400 text-sm">{tx.time}</p>
+                      <p className="text-gray-400 text-sm">
+                        {tx.type === 'received' ? 'Received' : 'Sent'}
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className={`font-semibold ${getTransactionColor(tx.type)}`}>
-                      {tx.amount}
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      {tx.type === 'received' ? 'Received' : 'Sent'}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
