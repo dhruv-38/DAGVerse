@@ -1,22 +1,43 @@
-import Navbar from './components/Navbar';
-import LoginForm from './components/LoginForm';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './utils/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Navigation from './components/Navigation';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Wallet from './pages/Wallet';
 
-export default function App() {
+function App() {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-          <section className="bg-gray-900 rounded-xl p-8 shadow-lg flex flex-col justify-center">
-            <h2 className="text-5xl font-bold mb-4">Welcome to DAGVerse</h2>
-            <p className="text-gray-300 text-lg">
-              Connect your wallet to get started with decentralized development.
-              Build, collaborate, and innovate securely on-chain.
-            </p>
-          </section>
-          <LoginForm />
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/wallet" 
+              element={
+                <ProtectedRoute>
+                  <Wallet />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </div>
-      </main>
-    </div>
+      </Router>
+    </AuthProvider>
   );
 }
+
+export default App;
