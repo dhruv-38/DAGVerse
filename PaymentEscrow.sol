@@ -18,7 +18,8 @@ contract PaymentEscrow {
     uint256 public escrowCount;
     mapping(uint256 => Escrow) public escrows;
 
-    event EscrowCreated(uint256 indexed escrowId, address indexed payer, address indexed payee, uint256 amount, uint64 deadline);
+    event EscrowCreated(uint256 indexed escrowId, address indexed payer, uint256 amount, uint64 deadline, string ipfsHash);
+    event EscrowClaimed(uint256 indexed escrowId, address indexed payee);
     event EscrowReleased(uint256 indexed escrowId);
     event EscrowRefunded(uint256 indexed escrowId);
     event EscrowDisputed(uint256 indexed escrowId);
@@ -39,18 +40,17 @@ contract PaymentEscrow {
         _;
     }
 
-    /// @notice Create a new escrow for a payment
-    /// @param payee Address to receive funds upon release
-    /// @param deadline Unix timestamp after which payer can cancel/refund
+    /// @notice Create a help request with funds held in escrow
+    /// @param deadline Unix timestamp after which the payer can cancel/refund
+    /// @param ipfsHash IPFS CID pointing to help request or bug details
     function createEscrow(uint64 deadline, string calldata ipfsHash) external payable returns (uint256) {
-        require(payee != address(0), "Invalid payee");
         require(msg.value > 0, "No funds sent");
         require(deadline > block.timestamp, "Deadline must be in future");
 
         escrowCount++;
         escrows[escrowCount] = Escrow({
             payer: msg.sender,
-            payee: payee,
+            payee: address(0),
             amount: msg.value,
             status: EscrowStatus.Pending,
             createdAt: uint64(block.timestamp),
@@ -58,7 +58,7 @@ contract PaymentEscrow {
             ipfsHash: ipfsHash
         });
 
-        emit EscrowCreated(escrowCount, msg.sender, payee, msg.value, deadline);
+        emit EscrowCreated(escrowCount, msg.sender, msg.value, deadline, ipfsHash);
         return escrowCount;
     }
 
@@ -67,11 +67,14 @@ contract PaymentEscrow {
         external
         inStatus(escrowId, EscrowStatus.Pending)
     {
-        require(escrows[escrowId].payee == address(0), "Already claimed");
+        Escrow storage esc = escrows[escrowId];
+        require(esc.payee == address(0), "Already claimed");
+        require(block.timestamp <= esc.deadline, "Claim deadline passed");
 
-        escrows[escrowId].payee = msg.sender;
+        esc.payee = msg.sender;
         emit EscrowClaimed(escrowId, msg.sender);
     }
+
 
     /// @notice Release funds to payee (only payer)
     function release(uint256 escrowId)
@@ -80,6 +83,7 @@ contract PaymentEscrow {
         inStatus(escrowId, EscrowStatus.Pending)
     {
         Escrow storage esc = escrows[escrowId];
+        require(esc.payee != address(0), "Escrow not yet claimed");
         esc.status = EscrowStatus.Released;
         (bool sent, ) = esc.payee.call{value: esc.amount}("");
         require(sent, "Transfer failed");
@@ -120,6 +124,7 @@ contract PaymentEscrow {
     {
         Escrow storage esc = escrows[escrowId];
         require(block.timestamp > esc.deadline, "Deadline not reached");
+        require(esc.payee == address(0), "Already claimed");
         esc.status = EscrowStatus.Cancelled;
         (bool sent, ) = esc.payer.call{value: esc.amount}("");
         require(sent, "Refund failed");
@@ -136,10 +141,11 @@ contract PaymentEscrow {
             uint256 amount,
             EscrowStatus status,
             uint64 createdAt,
-            uint64 deadline
+            uint64 deadline,
+            string memory ipfsHash
         )
     {
         Escrow memory esc = escrows[escrowId];
-        return (esc.payer, esc.payee, esc.amount, esc.status, esc.createdAt, esc.deadline);
+        return (esc.payer, esc.payee, esc.amount, esc.status, esc.createdAt, esc.deadline, esc.ipfsHash);
     }
 }
