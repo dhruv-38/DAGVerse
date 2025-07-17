@@ -3,7 +3,15 @@ import User from '../models/User.js';
 // Get user profile
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId || req.user.walletAddress);
+    let user;
+    
+    // Handle both traditional login and wallet login
+    if (req.user.userId) {
+      user = await User.findById(req.user.userId);
+    } else if (req.user.walletAddress) {
+      user = await User.findOne({ walletAddress: req.user.walletAddress });
+    }
+    
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -28,9 +36,15 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { username, email } = req.body;
-    const userId = req.user.userId || req.user.walletAddress;
+    let user;
     
-    const user = await User.findById(userId);
+    // Handle both traditional login and wallet login
+    if (req.user.userId) {
+      user = await User.findById(req.user.userId);
+    } else if (req.user.walletAddress) {
+      user = await User.findOne({ walletAddress: req.user.walletAddress });
+    }
+    
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

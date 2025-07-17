@@ -36,12 +36,6 @@ const Home = () => {
                   Get Started
                 </Link>
               )}
-              <Link
-                to="/wallet"
-                className="border-2 border-blue-500 text-blue-400 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-500 hover:text-white transition-all"
-              >
-                Connect Wallet
-              </Link>
             </div>
           </div>
         </div>

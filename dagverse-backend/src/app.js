@@ -6,37 +6,40 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
 import { createClient } from 'redis';
-import { RedisStore } from 'connect-redis';
+// import { RedisStore } from 'connect-redis';
 
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
+import executeRoutes from './routes/execute.js';
 
 dotenv.config();
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-const redisClient = createClient({ 
-  url: process.env.REDIS_URL,
-  legacyMode: true
-});
-redisClient.connect().catch(console.error);
+// const redisClient = createClient({ 
+//   url: process.env.REDIS_URL,
+//   legacyMode: true
+// });
+// redisClient.connect().catch(console.error);
 
 app.use(cors());
 app.use(express.json());
-app.use(
-  session({
-    store: new RedisStore({ client: redisClient }),
-    secret: process.env.JWT_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
-  })
-);
+// app.use(
+//   session({
+//     store: new RedisStore({ client: redisClient }),
+//     secret: process.env.JWT_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+//   })
+// );
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/execute', executeRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

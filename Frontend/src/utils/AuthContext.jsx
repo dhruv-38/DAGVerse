@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import apiService from '../services/api.js';
+import { ethers } from 'ethers';
 
 const AuthContext = createContext();
 
@@ -71,26 +72,35 @@ export const AuthProvider = ({ children }) => {
     apiService.logout();
   };
 
-  const connectWallet = async (walletAddress) => {
+  // Real MetaMask wallet connect
+  const connectWallet = async () => {
     try {
+      if (!window.ethereum) {
+        throw new Error('MetaMask is not installed');
+      }
+      // Request account access
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const walletAddress = await signer.getAddress();
+
       // Get challenge from backend
       const challengeResponse = await apiService.walletChallenge(walletAddress);
-      
-      // For demo purposes, we'll simulate the signature
-      // In a real app, you'd use the actual wallet to sign
-      const signature = '0x' + '1'.repeat(130); // Simulated signature
-      
+
+      // Ask user to sign the challenge
+      const signature = await signer.signMessage(challengeResponse.challenge);
+
       // Verify with backend
       const verifyResponse = await apiService.walletVerify({
         walletAddress,
         signature,
-        challenge: challengeResponse.challenge
+        challenge: challengeResponse.challenge,
       });
-      
+
       setWallet(true);
       setUser(verifyResponse.user);
       setAuth(true);
-      
+
       return { success: true, address: walletAddress };
     } catch (error) {
       console.error('Wallet connection failed:', error);

@@ -10,6 +10,7 @@ const Navigation = () => {
   const navigation = [
     { name: 'Home', href: '/', current: location.pathname === '/' },
     { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/dashboard' },
+    { name: 'Editor', href: '/editor', current: location.pathname === '/editor' },
     { name: 'Wallet', href: '/wallet', current: location.pathname === '/wallet' }
   ];
 
@@ -23,7 +24,7 @@ const Navigation = () => {
   }
 
   return (
-    <nav className="bg-white/5 backdrop-blur-lg border-b border-white/10">
+    <nav className="bg-white/5 backdrop-blur-lg border-b border-white/10 relative z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -73,7 +74,7 @@ const Navigation = () => {
             )}
 
             {/* User Menu */}
-            <div className="relative">
+            <div className="relative z-50">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="flex items-center space-x-3 text-white hover:text-gray-300 transition-colors"
@@ -91,7 +92,7 @@ const Navigation = () => {
 
               {/* Dropdown Menu */}
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-white/10 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-2xl border border-white/10 z-50" style={{zIndex: 9999}}>
                   <div className="py-1">
                     <div className="px-4 py-2 border-b border-white/10">
                       <p className="text-sm text-white font-medium">{user?.name || 'User'}</p>
@@ -137,7 +138,7 @@ const Navigation = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden">
+        <div className="md:hidden z-50" style={{zIndex: 9999}}>
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-800/50 backdrop-blur-lg border-t border-white/10">
             {navigation.map((item) => (
               <Link

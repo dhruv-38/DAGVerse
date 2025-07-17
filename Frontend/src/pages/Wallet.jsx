@@ -7,6 +7,7 @@ const Wallet = () => {
   const { walletConnected, connectWallet, disconnectWallet } = useAuth();
   const [connecting, setConnecting] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
+  const [error, setError] = useState('');
   const [walletData, setWalletData] = useState({
     balance: '0',
     currency: 'DAG',
@@ -46,20 +47,19 @@ const Wallet = () => {
     }
   };
 
+  // Use real MetaMask connect
   const handleConnectWallet = async () => {
     setConnecting(true);
+    setError('');
     try {
-      // Generate a mock wallet address for demo
-      const mockAddress = '0x' + Math.random().toString(16).substr(2, 40);
-      
-      const result = await connectWallet(mockAddress);
+      const result = await connectWallet();
       if (result.success) {
         setWalletAddress(result.address);
       } else {
-        console.error('Wallet connection failed:', result.error);
+        setError(result.error || 'Failed to connect wallet');
       }
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      setError('An unexpected error occurred while connecting wallet');
     } finally {
       setConnecting(false);
     }
@@ -74,6 +74,7 @@ const Wallet = () => {
       usdValue: '$0.00',
       transactions: []
     });
+    setError('');
   };
 
   const getTransactionIcon = (type) => {
@@ -114,6 +115,12 @@ const Wallet = () => {
               </svg>
             </div>
             
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg mb-6">
+                {error}
+              </div>
+            )}
+            
             {walletConnected ? (
               <div>
                 <h2 className="text-2xl font-bold text-white mb-2">Wallet Connected</h2>
@@ -147,6 +154,9 @@ const Wallet = () => {
                     'Connect Wallet'
                   )}
                 </button>
+                <p className="text-gray-400 text-sm mt-4">
+                  Requires MetaMask extension
+                </p>
               </div>
             )}
           </div>
