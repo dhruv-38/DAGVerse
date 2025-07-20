@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import CollaborativeEditor from './components/Editor';
 import Wallet from './pages/Wallet';
+import ExpertHelp from './pages/ExpertHelp';
 
 function App() {
   return (
@@ -47,6 +48,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Wallet />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/expert-help" 
+              element={
+                <ProtectedRoute>
+                  <ExpertHelp />
                 </ProtectedRoute>
               } 
             />

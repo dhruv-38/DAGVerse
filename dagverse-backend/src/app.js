@@ -11,6 +11,8 @@ import { createClient } from 'redis';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import executeRoutes from './routes/execute.js';
+import uploadRoutes from './routes/upload.js';
+// Removed: import solutionRoutes from './routes/solution.js';
 
 dotenv.config();
 console.log("MONGODB_URI:", process.env.MONGODB_URI);
@@ -40,6 +42,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/execute', executeRoutes);
+app.use('/api', uploadRoutes);
+// Removed: app.use('/api', solutionRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

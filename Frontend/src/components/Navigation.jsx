@@ -11,7 +11,8 @@ const Navigation = () => {
     { name: 'Home', href: '/', current: location.pathname === '/' },
     { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/dashboard' },
     { name: 'Editor', href: '/editor', current: location.pathname === '/editor' },
-    { name: 'Wallet', href: '/wallet', current: location.pathname === '/wallet' }
+    { name: 'Wallet', href: '/wallet', current: location.pathname === '/wallet' },
+    { name: 'Expert Help', href: '/expert-help', current: location.pathname === '/expert-help' }
   ];
 
   const handleLogout = () => {
