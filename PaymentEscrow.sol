@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 /// @title PaymentEscrow - Simple and Secure Escrow Contract for P2P Payments
 contract PaymentEscrow {
-    enum EscrowStatus { Pending, Released, Refunded, Disputed, Cancelled }
+    enum EscrowStatus { Pending, Claimed, Released, Refunded, Disputed, Cancelled }
 
     struct Escrow {
         address payer;
@@ -13,6 +13,7 @@ contract PaymentEscrow {
         uint64 createdAt;
         uint64 deadline;
         string ipfsHash;
+        string solutionIpfsHash;
     }
 
     uint256 public escrowCount;
@@ -20,6 +21,7 @@ contract PaymentEscrow {
 
     event EscrowCreated(uint256 indexed escrowId, address indexed payer, uint256 amount, uint64 deadline, string ipfsHash);
     event EscrowClaimed(uint256 indexed escrowId, address indexed payee);
+    event SolutionSubmitted(uint256 indexed escrowId, string solutionIpfsHash);
     event EscrowReleased(uint256 indexed escrowId);
     event EscrowRefunded(uint256 indexed escrowId);
     event EscrowDisputed(uint256 indexed escrowId);
@@ -55,7 +57,8 @@ contract PaymentEscrow {
             status: EscrowStatus.Pending,
             createdAt: uint64(block.timestamp),
             deadline: deadline,
-            ipfsHash: ipfsHash
+            ipfsHash: ipfsHash,
+            solutionIpfsHash: ""
         });
 
         emit EscrowCreated(escrowCount, msg.sender, msg.value, deadline, ipfsHash);
@@ -72,7 +75,22 @@ contract PaymentEscrow {
         require(block.timestamp <= esc.deadline, "Claim deadline passed");
 
         esc.payee = msg.sender;
+        esc.status = EscrowStatus.Claimed;
         emit EscrowClaimed(escrowId, msg.sender);
+    }
+
+    /// @notice Expert submits the IPFS hash of their solution
+    function submitSolution(uint256 escrowId, string calldata _solutionIpfsHash)
+        external
+        onlyPayee(escrowId)
+        inStatus(escrowId, EscrowStatus.Claimed)
+    {
+        Escrow storage esc = escrows[escrowId];
+        require(bytes(esc.solutionIpfsHash).length == 0, "Solution already submitted");
+        require(bytes(_solutionIpfsHash).length > 0, "Solution hash cannot be empty");
+
+        esc.solutionIpfsHash = _solutionIpfsHash;
+        emit SolutionSubmitted(escrowId, _solutionIpfsHash);
     }
 
 
@@ -80,10 +98,10 @@ contract PaymentEscrow {
     function release(uint256 escrowId)
         external
         onlyPayer(escrowId)
-        inStatus(escrowId, EscrowStatus.Pending)
+        inStatus(escrowId, EscrowStatus.Claimed)
     {
         Escrow storage esc = escrows[escrowId];
-        require(esc.payee != address(0), "Escrow not yet claimed");
+        require(bytes(esc.solutionIpfsHash).length > 0, "Solution not yet submitted");
         esc.status = EscrowStatus.Released;
         (bool sent, ) = esc.payee.call{value: esc.amount}("");
         require(sent, "Transfer failed");
@@ -94,7 +112,7 @@ contract PaymentEscrow {
     function refund(uint256 escrowId)
         external
         onlyPayer(escrowId)
-        inStatus(escrowId, EscrowStatus.Pending)
+        inStatus(escrowId, EscrowStatus.Claimed)
     {
         Escrow storage esc = escrows[escrowId];
         require(block.timestamp > esc.deadline, "Deadline not reached");
@@ -108,7 +126,7 @@ contract PaymentEscrow {
     function dispute(uint256 escrowId)
         external
         onlyPayee(escrowId)
-        inStatus(escrowId, EscrowStatus.Pending)
+        inStatus(escrowId, EscrowStatus.Claimed)
     {
         Escrow storage esc = escrows[escrowId];
         require(block.timestamp <= esc.deadline, "Deadline passed");
@@ -124,7 +142,6 @@ contract PaymentEscrow {
     {
         Escrow storage esc = escrows[escrowId];
         require(block.timestamp > esc.deadline, "Deadline not reached");
-        require(esc.payee == address(0), "Already claimed");
         esc.status = EscrowStatus.Cancelled;
         (bool sent, ) = esc.payer.call{value: esc.amount}("");
         require(sent, "Refund failed");
@@ -142,10 +159,11 @@ contract PaymentEscrow {
             EscrowStatus status,
             uint64 createdAt,
             uint64 deadline,
-            string memory ipfsHash
+            string memory ipfsHash,
+            string memory solutionIpfsHash
         )
     {
         Escrow memory esc = escrows[escrowId];
-        return (esc.payer, esc.payee, esc.amount, esc.status, esc.createdAt, esc.deadline, esc.ipfsHash);
+        return (esc.payer, esc.payee, esc.amount, esc.status, esc.createdAt, esc.deadline, esc.ipfsHash, esc.solutionIpfsHash);
     }
 }
