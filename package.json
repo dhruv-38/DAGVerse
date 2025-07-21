@@ -13,7 +13,17 @@
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
-  "keywords": ["dag", "blockchain", "decentralized", "development"],
+  "keywords": [
+    "dag",
+    "blockchain",
+    "decentralized",
+    "development"
+  ],
   "author": "DAGVerse Team",
-  "license": "MIT"
-} 
+  "license": "MIT",
+  "dependencies": {
+    "y-monaco": "^0.1.6",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27"
+  }
+}

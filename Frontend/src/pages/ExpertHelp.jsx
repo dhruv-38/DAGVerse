@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { uploadToIPFS } from '../utils/ipfs';
 import ProfileReleaseButton from './Profile';
+import { useAuth } from '../utils/AuthContext';
 
 // Use the deployed contract address
 // Previous contract "0xe5b2f1caf6253e4e9Ba3bCdAFCe3764948Ea3883";
@@ -348,6 +349,26 @@ const ESCROW_ABI = [
 ];
 
 const ExpertHelp = () => {
+  const { user, walletConnected, connectWallet } = useAuth();
+
+  // Require wallet connection (must be before any hooks)
+  if (!walletConnected) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="bg-white/10 rounded-xl p-8 shadow-lg text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Connect Your Wallet</h1>
+          <p className="text-gray-300 mb-6">Please connect your wallet to access expert help features.</p>
+          <button
+            onClick={connectWallet}
+            className="bg-cyan-400 hover:bg-cyan-500 text-[#181b34] font-semibold px-6 py-3 rounded-lg shadow transition"
+          >
+            Connect Wallet
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
@@ -486,7 +507,7 @@ const ExpertHelp = () => {
       setSolutionHash(hash);
       setSolvingReq({ ...solvingReq, solutionIpfsHash: hash });
       setMessage('Solution submitted!');
-      fetchRequests();
+      await fetchRequests(); // Ensure requests are refreshed after solution submission
     } catch (err) {
       setMessage('Failed to submit solution: ' + err.message);
     }
@@ -615,6 +636,18 @@ const ExpertHelp = () => {
             statusClass = 'bg-green-900 text-green-300';
           }
 
+          // Debug log for developer view
+          if (isMine && !isClosed) {
+            console.log('Developer view:', {
+              id: req.id,
+              isMine,
+              isClosed,
+              solutionIpfsHash: req.solutionIpfsHash,
+              payer: req.payer,
+              account,
+              status: req.status
+            });
+          }
           return (
             <div key={req.id} className="bg-white/5 rounded-xl p-8 border border-white/10 flex flex-col justify-between relative">
               <div className="flex items-center mb-4">
@@ -724,6 +757,7 @@ const ExpertHelp = () => {
 
 // Helper button for developer to show solution and release funds
 function ShowSolutionReleaseButton({ req, handleShowSolution }) {
+  // Show if there is a solution, the user is the payer, and the request is not closed
   if (req.solutionIpfsHash) {
     return (
       <button onClick={() => handleShowSolution(req)} className="bg-blue-700 text-white px-4 py-2 rounded font-semibold flex-1">Show Solution</button>

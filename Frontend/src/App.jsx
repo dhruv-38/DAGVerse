@@ -9,6 +9,7 @@ import Profile from './pages/Profile';
 import CollaborativeEditor from './components/Editor';
 import Wallet from './pages/Wallet';
 import ExpertHelp from './pages/ExpertHelp';
+import Sessions from './components/Sessions';
 
 function App() {
   return (
@@ -56,6 +57,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ExpertHelp />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions" 
+              element={
+                <ProtectedRoute>
+                  <Sessions />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/session/:id" 
+              element={
+                <ProtectedRoute>
+                  <Sessions />
                 </ProtectedRoute>
               } 
             />

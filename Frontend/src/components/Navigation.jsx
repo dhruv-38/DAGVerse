@@ -10,7 +10,7 @@ const Navigation = () => {
   const navigation = [
     { name: 'Home', href: '/', current: location.pathname === '/' },
     { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/dashboard' },
-    { name: 'Editor', href: '/editor', current: location.pathname === '/editor' },
+    { name: 'Sessions', href: '/sessions', current: location.pathname.startsWith('/sessions') || location.pathname.startsWith('/session') },
     { name: 'Wallet', href: '/wallet', current: location.pathname === '/wallet' },
     { name: 'Expert Help', href: '/expert-help', current: location.pathname === '/expert-help' }
   ];

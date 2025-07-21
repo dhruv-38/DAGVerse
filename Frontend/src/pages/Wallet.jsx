@@ -4,9 +4,8 @@ import { Link } from 'react-router-dom';
 import apiService from '../services/api.js';
 
 const Wallet = () => {
-  const { walletConnected, connectWallet, disconnectWallet } = useAuth();
+  const { walletConnected, connectWallet, disconnectWallet, user } = useAuth();
   const [connecting, setConnecting] = useState(false);
-  const [walletAddress, setWalletAddress] = useState('');
   const [error, setError] = useState('');
   const [walletData, setWalletData] = useState({
     balance: '0',
@@ -53,9 +52,7 @@ const Wallet = () => {
     setError('');
     try {
       const result = await connectWallet();
-      if (result.success) {
-        setWalletAddress(result.address);
-      } else {
+      if (!result.success) {
         setError(result.error || 'Failed to connect wallet');
       }
     } catch (error) {
@@ -67,13 +64,6 @@ const Wallet = () => {
 
   const handleDisconnectWallet = () => {
     disconnectWallet();
-    setWalletAddress('');
-    setWalletData({
-      balance: '0',
-      currency: 'DAG',
-      usdValue: '$0.00',
-      transactions: []
-    });
     setError('');
   };
 
@@ -114,20 +104,18 @@ const Wallet = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            
             {error && (
               <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg mb-6">
                 {error}
               </div>
             )}
-            
             {walletConnected ? (
               <div>
                 <h2 className="text-2xl font-bold text-white mb-2">Wallet Connected</h2>
                 <p className="text-gray-300 mb-6">Your wallet is successfully connected to DAGVerse</p>
                 <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
                   <p className="text-sm text-gray-400 mb-1">Wallet Address</p>
-                  <p className="text-white font-mono text-lg">{walletAddress}</p>
+                  <p className="text-white font-mono text-lg">{user?.walletAddress}</p>
                 </div>
                 <button
                   onClick={handleDisconnectWallet}
@@ -161,107 +149,6 @@ const Wallet = () => {
             )}
           </div>
         </div>
-
-        {/* Wallet Balance */}
-        {walletConnected && (
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-8 border border-white/10 mb-8">
-            <h3 className="text-xl font-semibold text-white mb-6">Wallet Balance</h3>
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <p className="text-gray-300 text-sm mb-2">DAG Balance</p>
-                  <p className="text-3xl font-bold text-white">{walletData.balance}</p>
-                  <p className="text-gray-400 text-sm">{walletData.currency}</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-gray-300 text-sm mb-2">USD Value</p>
-                  <p className="text-3xl font-bold text-white">{walletData.usdValue}</p>
-                  <p className="text-green-400 text-sm">+5.2% today</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-gray-300 text-sm mb-2">Network</p>
-                  <p className="text-3xl font-bold text-white">DAG</p>
-                  <p className="text-green-400 text-sm">Connected</p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Recent Transactions */}
-        {walletConnected && (
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-8 border border-white/10">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Recent Transactions</h3>
-              <button className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
-                View All
-              </button>
-            </div>
-            
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {walletData.transactions.map((tx) => (
-                  <div key={tx.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <span className="text-lg">{getTransactionIcon(tx.type)}</span>
-                      </div>
-                      <div>
-                        <p className="text-white font-medium">
-                          {tx.type === 'received' ? 'Received from' : 'Sent to'} {tx.type === 'received' ? tx.from : tx.to}
-                        </p>
-                        <p className="text-gray-400 text-sm">{tx.time}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={`font-semibold ${getTransactionColor(tx.type)}`}>
-                        {tx.amount}
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        {tx.type === 'received' ? 'Received' : 'Sent'}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Wallet Features */}
-        {walletConnected && (
-          <div className="mt-8">
-            <div className="bg-white/5 backdrop-blur-lg rounded-xl p-8 border border-white/10">
-              <h3 className="text-xl font-semibold text-white mb-6">Wallet Features</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-3">
-                  <span className="text-xl">💸</span>
-                  <span>Send DAG</span>
-                </button>
-                <button className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-3">
-                  <span className="text-xl">📥</span>
-                  <span>Receive DAG</span>
-                </button>
-                <button className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-3">
-                  <span className="text-xl">📊</span>
-                  <span>View Analytics</span>
-                </button>
-                <button className="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-3">
-                  <span className="text-xl">⚙️</span>
-                  <span>Settings</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

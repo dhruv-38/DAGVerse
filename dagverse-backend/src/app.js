@@ -13,6 +13,7 @@ import userRoutes from './routes/user.js';
 import executeRoutes from './routes/execute.js';
 import uploadRoutes from './routes/upload.js';
 // Removed: import solutionRoutes from './routes/solution.js';
+import { setupWebSocket } from './websocket.js';
 
 dotenv.config();
 console.log("MONGODB_URI:", process.env.MONGODB_URI);
@@ -51,10 +52,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // Add your route imports and use statements here
+setupWebSocket(server);
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
-    server.listen(process.env.PORT || 8000, () => {
+    server.listen(process.env.PORT || 8000, '0.0.0.0', () => {
       console.log('Server running');
     });
   })
