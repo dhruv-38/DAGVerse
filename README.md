@@ -244,6 +244,7 @@ Frontend → prepare session code blob
    PORT=8000
    MONGODB_URI=mongodb://localhost:27017/dagverse
    JWT_SECRET=your-super-secret-jwt-key
+   PINATA_JWT=create-your-pinata-jwt-pinata.cloud
    ```
 
    **Frontend (.env in Frontend/):**
