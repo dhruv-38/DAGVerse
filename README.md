@@ -143,6 +143,38 @@ DAGVerse/
 +------------------------------+
 ```
 
+## Sequence Diagrams Overview (Key Flows)
+1. Live Code Collaboration
+```bash
+User → Frontend → WebSocket (join session)
+User → MonacoEditor → handleCodeChange() → send via WebSocket
+Backend WebSocket → Broadcast code change → All users in session → update editor
+```
+2. Code Execution
+```bash
+User → Frontend → API POST /execute with code & lang
+Backend → dockerExecutor → run in container → return output
+Frontend → show stdout/stderr to user
+```
+3. Wallet Authentication
+```bash
+User → MetaMask Connect → sign challenge
+Frontend → API /wallet-verify → Backend verifies → issue JWT
+JWT used for secure API calls & WebSocket headers
+```
+4. Escrow & Payment Flow
+```bash
+User A → Create request → Smart contract: createEscrow()
+User B → Claim → Submit work → Smart contract: submitWork()
+User A → Approve → Smart contract: releaseFunds()
+```
+5. Session Save to IPFS
+```bash
+Frontend → prepare session code blob
+→ API /upload-to-ipfs → Backend → Pinata API → Get CID
+→ Store CID on-chain via contract → Immutable record
+```
+
 ## Quick Start
 
 ### Prerequisites
