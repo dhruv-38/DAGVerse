@@ -212,7 +212,7 @@ DAGVerse/
 
 This project is part of the DAGVerse hackathon project.
 
-See License [here](LICENSE)
+See MIT License [here](LICENSE)
 
 ## 🆘 Support
 
