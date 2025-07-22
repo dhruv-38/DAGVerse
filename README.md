@@ -119,12 +119,14 @@ DAGVerse/
 4. Access Mongo Express Web UI
 
    Visit http://localhost:8082 in your browser.
+   
    Username: admin
    Password: admin123
+   
   | 🔒 You can change these credentials in the docker-compose.yml file under the mongo-express service.
    Access to your MongoDB via IP 127.0.0.1 and port 27017
 
-5. **Set up environment variables**
+6. **Set up environment variables**
 
    **Backend (.env in dagverse-backend/):**
    ```env
@@ -138,12 +140,12 @@ DAGVerse/
    VITE_API_URL=http://localhost:8000/api
    ```
 
-6. **Start MongoDB** (if running locally)
+7. **Start MongoDB** (if running locally)
    ```bash
    mongod
    ```
 
-7. **Start both frontend and backend**
+8. **Start both frontend and backend**
    ```bash
    npm run dev
    ```
