@@ -25,7 +25,8 @@ const SESSION_LOG_ABI = [
   {"inputs":[],"name":"sessionCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
 ];
 
-const CONTRACT_ADDRESS = "0xa523A357ecAD85FC02069aa12Dbc839B57C7be85";
+// const CONTRACT_ADDRESS = "0xa523A357ecAD85FC02069aa12Dbc839B57C7be85"; old address
+const CONTRACT_ADDRESS = "0xeBE423bb8385cFF5fAD469464faB81a783ee244a";
 
 export default function Sessions() {
   const { user, walletConnected, connectWallet } = useAuth();
@@ -78,7 +79,9 @@ export default function Sessions() {
   const [contract, setContract] = useState(null);
   const [userAddress, setUserAddress] = useState('');
 
-  // Instantiate contract locally like ExpertHelp.jsx
+  //IPFS gateway and CID
+  const gatewayDomain = "brown-imaginative-mammal-280.mypinata.cloud"
+
   useEffect(() => {
     if (window.ethereum) {
       const prov = new ethers.BrowserProvider(window.ethereum);
@@ -226,7 +229,7 @@ export default function Sessions() {
       }
       // Get latest version from blockchain
       const latestVersion = await contractInstance.getLatestVersion(session.sessionId);
-      const ipfsUrl = `https://ipfs.io/ipfs/${latestVersion.ipfsHash}`;
+      const ipfsUrl = `https://${gatewayDomain}/ipfs/${latestVersion.ipfsHash}`;
       // Fetch code and language from IPFS
       const response = await fetch(ipfsUrl);
       const text = await response.text();
@@ -492,7 +495,7 @@ export default function Sessions() {
   const getFromIPFS = async (hash, fallbackLanguage = 'javascript') => {
     // Fetch from backend IPFS proxy (or directly from IPFS if you have a gateway)
     try {
-      const url = `https://ipfs.io/ipfs/${hash}`;
+      const url = `https://${gatewayDomain}/ipfs/${hash}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch from IPFS');
       const data = await res.json();

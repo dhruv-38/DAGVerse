@@ -5,8 +5,6 @@ import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import CollaborativeEditor from './components/Editor';
 import Wallet from './pages/Wallet';
 import ExpertHelp from './pages/ExpertHelp';
 import Sessions from './components/Sessions';
@@ -25,22 +23,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/editor" 
-              element={
-                <ProtectedRoute>
-                  <CollaborativeEditor />
                 </ProtectedRoute>
               } 
             />

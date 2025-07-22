@@ -1,73 +1,68 @@
-# DAGVerse - Decentralized Development Platform
+# DAGVerse: Decentralized Workflow Automation Platform
 
-A full-stack decentralized development platform built with React, Node.js, and MongoDB. DAGVerse provides authentication, wallet integration, and project management for blockchain developers.
+## Project Overview
 
-## 🚀 Features
+**DAGVerse** is a decentralized platform that empowers users to design, execute, and share automated workflows using Directed Acyclic Graphs (DAGs). The platform leverages smart contracts (BlockDAG testnet integration in progress) and decentralized storage to provide transparent, trustless, and collaborative automation for developers, data scientists, and businesses.
 
-### Frontend (React)
-- **Modern UI** - Clean, responsive design with Tailwind CSS
-- **Authentication** - Login/Register with JWT tokens
-- **Wallet Integration** - Connect and manage DAG wallets
-- **Dashboard** - User stats, projects, and activity feed
-- **Protected Routes** - Secure access to authenticated pages
+## Purpose
 
-### Backend (Node.js/Express)
-- **RESTful API** - Complete authentication and user management
-- **JWT Authentication** - Secure token-based authentication
-- **MongoDB Integration** - User data persistence
-- **Wallet Authentication** - Challenge-response wallet verification
-- **Redis Sessions** - Scalable session management
+DAGVerse addresses the limitations of centralized workflow automation tools by offering a decentralized alternative. Users can create, execute, and share workflows securely, with all logic and results verifiable and accessible via decentralized storage.
 
-## 🛠️ Tech Stack
+## Features
+
+- **Decentralized Workflow Execution:** (In progress) Run workflows using smart contracts on the BlockDAG testnet.
+- **User-Friendly Interface:** Intuitive frontend for workflow creation, execution, and monitoring.
+- **Secure Authentication:** User registration and login with JWT-based authentication.
+- **Workflow Management:** Create, edit, and manage workflows as DAGs.
+- **Community Sharing:** (Planned) Discover and share reusable workflows with the community.
+- **IPFS Integration:** (Planned) Store workflow definitions and results on IPFS for decentralized access.
+
+## Tech Stack
 
 ### Frontend
-- **React 19** - Latest React with hooks
-- **React Router v6** - Client-side routing
-- **Tailwind CSS** - Utility-first styling
-- **Vite** - Fast build tool
+- **React** (with hooks)
+- **React Router v6**
+- **Tailwind CSS**
+- **Vite**
 
 ### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web framework
-- **MongoDB** - NoSQL database
-- **Redis** - Session store
-- **JWT** - Authentication tokens
-- **bcrypt** - Password hashing
-- **ethers.js** - Ethereum wallet integration
+- **Node.js**
+- **Express.js**
+- **MongoDB** (for user and workflow data)
+- **JWT** (for authentication)
+- **bcrypt** (for password hashing)
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 DAGVerse/
 ├── Frontend/                 # React frontend
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/          # Page components
-│   │   ├── services/       # API service layer
-│   │   ├── utils/          # Utilities and context
-│   │   └── App.jsx         # Main app component
+│   │   ├── components/      # UI components
+│   │   ├── pages/           # Page components
+│   │   ├── services/        # API service layer
+│   │   ├── utils/           # Utilities and context
+│   │   └── App.jsx          # Main app component
 │   ├── package.json
 │   └── README.md
 ├── dagverse-backend/        # Node.js backend
 │   ├── src/
-│   │   ├── controllers/    # Route controllers
-│   │   ├── middleware/     # Express middleware
-│   │   ├── models/         # MongoDB models
-│   │   ├── routes/         # API routes
-│   │   └── app.js          # Main server file
+│   │   ├── controllers/     # Route controllers
+│   │   ├── middleware/      # Express middleware
+│   │   ├── models/          # MongoDB models
+│   │   ├── routes/          # API routes
+│   │   └── app.js           # Main server file
 │   ├── package.json
 │   └── .env
-├── package.json            # Root package.json
+├── package.json             # Root package.json
 └── README.md
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-
 - **Node.js** (v16 or higher)
 - **MongoDB** (running locally or cloud instance)
-- **Redis** (optional, for session storage)
 
 ### Installation
 
@@ -77,142 +72,69 @@ DAGVerse/
    cd DAGVerse
    ```
 
-2. **Install all dependencies**
+2. **Install backend dependencies**
    ```bash
-   npm run install:all
+   cd dagverse-backend
+   npm install
+   npm start
    ```
 
-3. **Set up environment variables**
+3. **Install frontend dependencies**
+   ```bash
+   cd ../Frontend
+   npm install
+   npm run dev
+   ```
 
-   **Backend (.env in dagverse-backend/)**
+4. **Set up environment variables**
+
+   **Backend (.env in dagverse-backend/):**
    ```env
    PORT=8000
    MONGODB_URI=mongodb://localhost:27017/dagverse
-   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-   REDIS_URL=redis://localhost:6379
+   JWT_SECRET=your-super-secret-jwt-key
    ```
 
-   **Frontend (.env in Frontend/)**
+   **Frontend (.env in Frontend/):**
    ```env
    VITE_API_URL=http://localhost:8000/api
    ```
 
-4. **Start MongoDB** (if running locally)
+5. **Start MongoDB** (if running locally)
    ```bash
    mongod
    ```
 
-5. **Start Redis** (optional, for sessions)
-   ```bash
-   redis-server
-   ```
+6. **Access the app**
+   - Backend: http://localhost:8000
+   - Frontend: http://localhost:5173
 
-6. **Start both frontend and backend**
-   ```bash
-   npm run dev
-   ```
+## Usage
 
-   This will start:
-   - Backend on `http://localhost:8000`
-   - Frontend on `http://localhost:5173`
+- Register or log in to your account.
+- Create, execute, and manage your workflows from the dashboard.
+- (Planned) Deploy and execute workflows on the BlockDAG testnet.
 
-### Individual Commands
+## API Endpoints (Backend)
 
-- **Start only backend**: `npm run dev:backend`
-- **Start only frontend**: `npm run dev:frontend`
-- **Build frontend**: `npm run build`
-- **Start production**: `npm start`
-
-## 🔐 Authentication
-
-### Traditional Login/Register
-- Users can register with email/password
-- Passwords are hashed with bcrypt
-- JWT tokens are issued for authentication
-
-### Wallet Authentication
-- Users can connect their wallet
-- Challenge-response verification
-- Supports Ethereum-compatible wallets
-
-## 📡 API Endpoints
-
-### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `POST /api/auth/wallet-challenge` - Get wallet challenge
-- `POST /api/auth/wallet-verify` - Verify wallet signature
-
-### User Management
 - `GET /api/user/profile` - Get user profile
 - `PUT /api/user/profile` - Update user profile
-
-### Health Check
 - `GET /api/health` - Server health status
 
-## 🎨 Frontend Features
+## Status
 
-### Pages
-- **Home** (`/`) - Landing page with features
-- **Login** (`/login`) - Authentication page
-- **Dashboard** (`/dashboard`) - User dashboard (protected)
-- **Wallet** (`/wallet`) - Wallet management (protected)
+- **Smart contract deployment:** In progress (BlockDAG testnet integration planned)
+- **Live demo:** Coming soon
+- **Demo video:** [To be added before submission]
+- **Deployed contract address:** [To be added]
 
-### Components
-- **Navigation** - Header with user menu and wallet status
-- **ProtectedRoute** - Route protection for authenticated users
-- **AuthContext** - Global authentication state management
+## License
 
-## 🔧 Development
+This project is licensed under the MIT License.
 
-### Adding New Features
-
-1. **Backend API**
-   - Add routes in `src/routes/`
-   - Add controllers in `src/controllers/`
-   - Add models in `src/models/` if needed
-
-2. **Frontend**
-   - Add pages in `src/pages/`
-   - Add components in `src/components/`
-   - Update API service in `src/services/api.js`
-
-### Environment Variables
-
-**Backend (.env)**
-- `PORT` - Server port (default: 8000)
-- `MONGODB_URI` - MongoDB connection string
-- `JWT_SECRET` - Secret for JWT tokens
-- `REDIS_URL` - Redis connection string
-
-**Frontend (.env)**
-- `VITE_API_URL` - Backend API URL
-
-## 🚀 Deployment
-
-### Backend Deployment
-1. Set production environment variables
-2. Build and start the server
-3. Use PM2 or similar for process management
-
-### Frontend Deployment
-1. Build the project: `npm run build`
-2. Deploy the `dist` folder to your hosting service
-3. Update `VITE_API_URL` to point to your production backend
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📝 License
-
-This project is part of the DAGVerse hackathon project.
-
-## 🆘 Support
+## Support
 
 For questions or issues:
 1. Check the documentation
@@ -221,4 +143,4 @@ For questions or issues:
 
 ---
 
-**Happy coding with DAGVerse! 🚀**
+**Happy building with DAGVerse! 🚀**

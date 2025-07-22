@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useAuth } from '../utils/AuthContext';
 
 // SessionLog contract (collaborative projects)
-const SESSION_LOG_ADDRESS = '0xa523A357ecAD85FC02069aa12Dbc839B57C7be85';
+const SESSION_LOG_ADDRESS = '0xeBE423bb8385cFF5fAD469464faB81a783ee244a';
 const SESSION_LOG_ABI = [
   {"inputs":[{"internalType":"uint256","name":"sessionId","type":"uint256"}],"name":"getSession","outputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint64","name":"createdAt","type":"uint64"},{"internalType":"address[]","name":"participants","type":"address[]"},{"internalType":"uint256","name":"versionCount","type":"uint256"}],"stateMutability":"view","type":"function"},
   {"inputs":[],"name":"sessionCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
@@ -11,7 +11,7 @@ const SESSION_LOG_ABI = [
 ];
 
 // PaymentEscrow contract (expert help)
-const ESCROW_ADDRESS = '0xaEFa7d462cC4E3c2fdB544C346b5Bf822Fea0bDC';
+const ESCROW_ADDRESS = '0x969005435a2648e031Bf88F71d6DDA8D6a4E6DB3';
 const ESCROW_ABI = [
   {"inputs":[],"name":"escrowCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
   {"inputs":[{"internalType":"uint256","name":"escrowId","type":"uint256"}],"name":"getEscrow","outputs":[{"internalType":"address","name":"payer","type":"address"},{"internalType":"address","name":"payee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint8","name":"status","type":"uint8"},{"internalType":"uint64","name":"createdAt","type":"uint64"},{"internalType":"uint64","name":"deadline","type":"uint64"},{"internalType":"string","name":"ipfsHash","type":"string"},{"internalType":"string","name":"solutionIpfsHash","type":"string"}],"stateMutability":"view","type":"function"}

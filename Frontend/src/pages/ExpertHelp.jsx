@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { uploadToIPFS } from '../utils/ipfs';
-import ProfileReleaseButton from './Profile';
 import { useAuth } from '../utils/AuthContext';
 
 // Use the deployed contract address
-// Previous contract "0xe5b2f1caf6253e4e9Ba3bCdAFCe3764948Ea3883";
-const ESCROW_CONTRACT_ADDRESS = "0xaEFa7d462cC4E3c2fdB544C346b5Bf822Fea0bDC";
+const ESCROW_CONTRACT_ADDRESS = "0x969005435a2648e031Bf88F71d6DDA8D6a4E6DB3"; // Updated contract address
 
 // Use the provided ABI
 const ESCROW_ABI = [
@@ -387,6 +385,9 @@ const ExpertHelp = () => {
   const [solutionCode, setSolutionCode] = useState('');
   const [solutionModalReq, setSolutionModalReq] = useState(null);
 
+  //IPFS gateway and CID
+  const gatewayDomain = "brown-imaginative-mammal-280.mypinata.cloud"
+
   // Connect wallet and contract
   useEffect(() => {
     if (window.ethereum) {
@@ -483,7 +484,7 @@ const ExpertHelp = () => {
     setShowSolveModal(true);
     setMessage('Fetching code from IPFS...');
     try {
-      const res = await fetch(`https://ipfs.io/ipfs/${req.ipfsHash}`);
+      const res = await fetch(`https://${gatewayDomain}/ipfs/${req.ipfsHash}`);
       const code = await res.text();
       setSolveCode(code);
       setMessage('');
@@ -520,7 +521,7 @@ const ExpertHelp = () => {
     setMessage('Fetching solution from IPFS...');
     try {
       if (req.solutionIpfsHash) {
-        const res = await fetch(`https://ipfs.io/ipfs/${req.solutionIpfsHash}`);
+        const res = await fetch(`https://${gatewayDomain}/ipfs/${req.solutionIpfsHash}`);
         const code = await res.text();
         setSolutionCode(code);
         setMessage('');
@@ -658,7 +659,7 @@ const ExpertHelp = () => {
                   <h2 className="text-xl font-bold text-white mb-1">Help Request #{req.id}</h2>
                   <p className="text-gray-300 text-sm mb-1">
                     {req.ipfsHash ? (
-                      <a href={`https://ipfs.io/ipfs/${req.ipfsHash}`} target="_blank" rel="noopener noreferrer" className="underline text-cyan-300">View Description on IPFS</a>
+                      <a href={`https://${gatewayDomain}/ipfs/${req.ipfsHash}`} target="_blank" rel="noopener noreferrer" className="underline text-cyan-300">View Description on IPFS</a>
                     ) : 'No description (to be stored on IPFS)'}
                   </p>
                   <div className="flex items-center space-x-2 mb-1">
@@ -700,7 +701,7 @@ const ExpertHelp = () => {
                 )}
                 {/* Show solution link if available for expert */}
                 {req.solutionIpfsHash && req.payee && req.payee.toLowerCase() === account?.toLowerCase() && !isMine && !isClosed && (
-                  <a href={`https://ipfs.io/ipfs/${req.solutionIpfsHash}`} target="_blank" rel="noopener noreferrer" className="bg-blue-700 text-white px-4 py-2 rounded font-semibold flex-1 text-center">View Submitted Solution</a>
+                  <a href={`https://${gatewayDomain}/ipfs/${req.solutionIpfsHash}`} target="_blank" rel="noopener noreferrer" className="bg-blue-700 text-white px-4 py-2 rounded font-semibold flex-1 text-center">View Submitted Solution</a>
                 )}
               </div>
             </div>

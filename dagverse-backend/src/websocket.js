@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 
-const sessions = new Map(); // sessionId -> Set of WebSocket connections
+const sessions = new Map();
 
 export function setupWebSocket(server) {
   const wss = new WebSocketServer({ 
@@ -20,7 +20,6 @@ export function setupWebSocket(server) {
     const sessionConnections = sessions.get(sessionId);
     sessionConnections.add(ws);
 
-    // Broadcast user joined to all users (including the new joiner)
     broadcast(sessionId, {
       type: 'user_joined',
       activeUsers: sessionConnections.size
@@ -30,7 +29,6 @@ export function setupWebSocket(server) {
       try {
         const message = JSON.parse(data.toString());
         
-        // Broadcast to all other connections in the session
         broadcast(sessionId, message, ws);
       } catch (error) {
         console.error('WebSocket message error:', error);
