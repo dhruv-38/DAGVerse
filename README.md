@@ -77,7 +77,7 @@ DAGVerse/
 - **MongoDB** (running locally or cloud instance)
 - **Redis** (optional, for session storage)
 - **Docker**
-- **Make** ([Mac](https://formulae.brew.sh/formula/make) [Windows](https://stackoverflow.com/questions/2532234/how-to-run-a-makefile-in-windows))
+- **Make** ([Mac](https://formulae.brew.sh/formula/make), [Windows](https://stackoverflow.com/questions/2532234/how-to-run-a-makefile-in-windows))
 
 ### Installation
 
@@ -91,8 +91,34 @@ DAGVerse/
    ```bash
    npm run install:all
    ```
+3. **Set up mongodb and other images**
+   **MongoDB (.env in mongodb-docker-setup/)**
+   ```env
+   MONGO_USER=root
+   MONGO_PASSWORD=StrongRootPass123
+   MONGO_DB=dagverse
+   ```
+   **For Mac 
+   ```bash
+      chmod +x docker_pull_images.sh
+      ./docker_pull_images.sh
+   ```
+   **For Windows 
+   ```bash
+      Double-click to run, or run in Command Prompt -- docker_pull_images.bat
+   ```
+   **MakeFile**
+   ```bash
+      make
+   ```
+4. Access Mongo Express Web UI
+   Visit http://localhost:8082 in your browser.
+   Username: admin
+   Password: admin123
+  | 🔒 You can change these credentials in the docker-compose.yml file under the mongo-express service.
+   Access to your MongoDB via IP 127.0.0.1 and port 27017
 
-3. **Set up environment variables**
+5. **Set up environment variables**
 
    **Backend (.env in dagverse-backend/)**
    ```env
@@ -107,17 +133,17 @@ DAGVerse/
    VITE_API_URL=http://localhost:8000/api
    ```
 
-4. **Start MongoDB** (if running locally)
+6. **Start MongoDB** (if running locally)
    ```bash
    mongod
    ```
 
-5. **Start Redis** (optional, for sessions)
+7. **Start Redis** (optional, for sessions)
    ```bash
    redis-server
    ```
 
-6. **Start both frontend and backend**
+8. **Start both frontend and backend**
    ```bash
    npm run dev
    ```
