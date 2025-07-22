@@ -54,7 +54,15 @@ DAGVerse/
 │   │   └── app.js           # Main server file
 │   ├── package.json
 │   └── .env
-├── package.json             # Root package.json
+├── docker_pull_image.bat
+├── docker_pull_images.sh
+├── LICENSE
+├── Makefile
+├── mongodb-docker-setup  
+│   ├── docker-compose.yml
+|   └── .env
+│   └── init-scripts
+├── package.json            # Root package.json
 └── README.md
 ```
 
@@ -63,6 +71,9 @@ DAGVerse/
 ### Prerequisites
 - **Node.js** (v16 or higher)
 - **MongoDB** (running locally or cloud instance)
+- **Redis** (optional, for session storage)
+- **Docker**
+- **Make** ([Mac](https://formulae.brew.sh/formula/make), [Windows](https://stackoverflow.com/questions/2532234/how-to-run-a-makefile-in-windows))
 
 ### Installation
 
@@ -85,8 +96,34 @@ DAGVerse/
    npm install
    npm run dev
    ```
+3. **Set up mongodb and other images**
+   **MongoDB (.env in mongodb-docker-setup/)**
+   ```env
+   MONGO_USER=root
+   MONGO_PASSWORD=StrongRootPass123
+   MONGO_DB=dagverse
+   ```
+   **For Mac 
+   ```bash
+      chmod +x docker_pull_images.sh
+      ./docker_pull_images.sh
+   ```
+   **For Windows 
+   ```bash
+      Double-click to run, or run in Command Prompt -- docker_pull_images.bat
+   ```
+   **MakeFile
+   ```bash
+      make
+   ```
+4. Access Mongo Express Web UI
+   Visit http://localhost:8082 in your browser.
+   Username: admin
+   Password: admin123
+  | 🔒 You can change these credentials in the docker-compose.yml file under the mongo-express service.
+   Access to your MongoDB via IP 127.0.0.1 and port 27017
 
-4. **Set up environment variables**
+5. **Set up environment variables**
 
    **Backend (.env in dagverse-backend/):**
    ```env
@@ -100,23 +137,47 @@ DAGVerse/
    VITE_API_URL=http://localhost:8000/api
    ```
 
-5. **Start MongoDB** (if running locally)
+6. **Start MongoDB** (if running locally)
    ```bash
    mongod
    ```
 
-6. **Access the app**
-   - Backend: http://localhost:8000
-   - Frontend: http://localhost:5173
+7. **Start Redis** (optional, for sessions)
+   ```bash
+   redis-server
+   ```
 
-## Usage
+8. **Start both frontend and backend**
+   ```bash
+   npm run dev
+   ```
 
-- Register or log in to your account.
-- Create, execute, and manage your workflows from the dashboard.
-- (Planned) Deploy and execute workflows on the BlockDAG testnet.
+   This will start:
+   - Backend on `http://localhost:8000`
+   - Frontend on `http://localhost:5173`
 
-## API Endpoints (Backend)
+### Individual Commands
 
+- **Start only backend**: `npm run dev:backend`
+- **Start only frontend**: `npm run dev:frontend`
+- **Build frontend**: `npm run build`
+- **Start production**: `npm start`
+
+## 🔐 Authentication
+
+### Traditional Login/Register
+- Users can register with email/password
+- Passwords are hashed with bcrypt
+- JWT tokens are issued for authentication
+
+### Wallet Authentication
+- Users can connect their wallet
+- Challenge-response verification
+- Supports Ethereum-compatible wallets
+
+## 📡 API Endpoints
+
+### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `GET /api/user/profile` - Get user profile
@@ -143,4 +204,4 @@ For questions or issues:
 
 ---
 
-**Happy building with DAGVerse! 🚀**
+**Happy coding with DAGVerse! 🚀**
