@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 contract SessionLog {
     struct Version {
         uint64 timestamp;
-        string ipfsHash; // IPFS CID for the saved file/version
+        string ipfsHash;
         address savedBy;
     }
 
@@ -37,7 +37,7 @@ contract SessionLog {
     );
     event ParticipantAdded(uint256 indexed sessionId, address indexed participant);
 
-    // Create a new session and log the very first version (creator is also first participant)
+    // Create a new session and log the very first version
     function createSession(address[] memory initialParticipants, string memory ipfsHash) external returns (uint256) {
         require(bytes(ipfsHash).length != 0, "IPFS hash required");
         sessionCount++;
@@ -49,20 +49,18 @@ contract SessionLog {
         s.createdAt = uint64(block.timestamp);
         s.exists = true;
 
-        // Add owner as participant if not in initial list
-        bool ownerInList = false;
+        // Add owner as a participant
+        s.participants.push(msg.sender);
+        s.isParticipant[msg.sender] = true;
+
+        // Add initial participants, ensuring no duplicates
         for (uint i = 0; i < initialParticipants.length; i++) {
             address p = initialParticipants[i];
             require(p != address(0), "Invalid participant address");
-            if (p == msg.sender) ownerInList = true;
             if (!s.isParticipant[p]) {
                 s.participants.push(p);
                 s.isParticipant[p] = true;
             }
-        }
-        if (!ownerInList) {
-            s.participants.push(msg.sender);
-            s.isParticipant[msg.sender] = true;
         }
 
         s.history.push(Version(uint64(block.timestamp), ipfsHash, msg.sender));
@@ -71,7 +69,7 @@ contract SessionLog {
         return newSessionId;
     }
 
-    // Add a new version to existing session (only by a participant)
+    // Add a new version to an existing session (only by a participant)
     function saveVersion(uint256 sessionId, string memory ipfsHash) external {
         Session storage s = sessions[sessionId];
         require(s.exists, "Session does not exist");
@@ -82,18 +80,16 @@ contract SessionLog {
         emit VersionAdded(sessionId, uint64(block.timestamp), ipfsHash, msg.sender);
     }
 
-    // Add a participant (owner only)
-    function addParticipant(uint256 sessionId, address participant) external {
+    /// @notice Allows any user to join an existing session as a participant.
+    function joinSession(uint256 sessionId) external {
         Session storage s = sessions[sessionId];
         require(s.exists, "Session does not exist");
-        require(msg.sender == s.owner, "Only owner");
-        require(participant != address(0), "Invalid address");
-        require(!s.isParticipant[participant], "Already a participant");
+        require(!s.isParticipant[msg.sender], "Already a participant");
 
-        s.participants.push(participant);
-        s.isParticipant[participant] = true;
-        emit ParticipantAdded(sessionId, participant);
-    }
+        s.participants.push(msg.sender);
+        s.isParticipant[msg.sender] = true;
+        emit ParticipantAdded(sessionId, msg.sender);
+     }
 
     // View all version history for a session
     function getHistory(uint256 sessionId) external view returns (
