@@ -65,6 +65,115 @@ DAGVerse/
 ├── package.json            # Root package.json
 └── README.md
 ```
+## Flow Diagram
+```
++------------------------------------------------------------------------------------+
+|                                     FRONTEND (React)                               |
+|                                                                                    |
+|    +------------------+     +------------------+       +----------------------+    |
+|    |  AuthContext     |<--->|   Wallet Connect |<----->| MetaMask Extension   |    |
+|    |  (JWT & Wallet)  |     |  (ethers.js)     |       +----------------------+    |
+|    +------------------+     +------------------+                                      |
+|             |                      |                                                  |
+|             v                      v                                                  |
+|    +-----------------------------+        +----------------------------------------+ |
+|    |    Sessions.jsx             |<-----> |     Monaco Editor (Live Code)          | |
+|    | - WebSocket logic           |        +----------------------------------------+ |
+|    | - Code sync & Chat          |                                                  |
+|    | - Active Users & Languages  |                                                  |
+|    +-----------------------------+                                                  |
+|             |                                                                          |
+|             v                                                                          |
+|    +---------------------------+                                                      |
+|    | ExpertHelp.jsx / Dashboard|<--------------------------------------------------+  |
+|    | - IPFS Save / Load        |                                                   |  |
+|    | - Smart Contract Calls    |<-------------------[Blockchain (EVM)]<----------+ |  |
+|    +---------------------------+                                                   | |
+|             |                                                                      | |
+|             v                                                                      | |
+|    +----------------------------+                                                  | |
+|    | uploadToIPFS / Pinata      |<----------+                                       | |
+|    +----------------------------+           |                                       | |
+|                                             |                                       | |
++---------------------------------------------+---------------------------------------+ |
+
+                             ⇅
+                    HTTP API & WebSocket
+                             ⇅
+
++------------------------------------------------------------------------------------+
+|                                     BACKEND (Node.js/Express)                      |
+|                                                                                    |
+|    +----------------------+    +---------------------------+     +-------------+  |
+|    | authController.js    |<-->| routes/auth.js            |     | JWT Auth MW |  |
+|    | - walletChallenge()  |    +---------------------------+     +-------------+  |
+|    | - walletVerify()     |                                                          |
+|    +----------------------+                                                          |
+|                                                                                    |
+|    +----------------------+    +---------------------------+     +--------------+ |
+|    | websocket.js         |<-->| /session/:sessionId WS    |<--->| WebSocket    | |
+|    | - handle code/chat   |    +---------------------------+     | Server       | |
+|    | - manage users       |                                          (ws://...)     |
+|    +----------------------+                                                          |
+|                                                                                    |
+|    +----------------------+    +---------------------------+     +--------------+ |
+|    | dockerExecutor.js    |<-->| routes/execute.js         |     | Docker Daemon| |
+|    | - run code in Docker |    | - /api/execute            |     | + Images     | |
+|    +----------------------+    | - /api/session            |     |   (Python,   | |
+|                                | - /api/session/close      |     |    JS, Sol)  | |
+|                                +---------------------------+     +--------------+ |
+|                                                                                    |
+|    +----------------------+    +---------------------------+                        |
+|    | upload.js            |<-->| routes/upload.js          |<-------> Pinata API   |
+|    | - /upload-to-ipfs    |    +---------------------------+                        |
+|    +----------------------+                                                          |
++------------------------------------------------------------------------------------+
+
++------------------------------+
+|      Blockchain (EVM)       |
+| - Escrow Smart Contract     |
+| - Stores IPFS Hashes        |
+| - Handles BDAG Token Flow   |
++------------------------------+
+
++------------------------------+
+|             IPFS             |
+| - Stores Code Snapshots     |
+| - Immutable Session History |
++------------------------------+
+```
+
+## Sequence Diagrams Overview (Key Flows)
+1. Live Code Collaboration
+```bash
+User → Frontend → WebSocket (join session)
+User → MonacoEditor → handleCodeChange() → send via WebSocket
+Backend WebSocket → Broadcast code change → All users in session → update editor
+```
+2. Code Execution
+```bash
+User → Frontend → API POST /execute with code & lang
+Backend → dockerExecutor → run in container → return output
+Frontend → show stdout/stderr to user
+```
+3. Wallet Authentication
+```bash
+User → MetaMask Connect → sign challenge
+Frontend → API /wallet-verify → Backend verifies → issue JWT
+JWT used for secure API calls & WebSocket headers
+```
+4. Escrow & Payment Flow
+```bash
+User A → Create request → Smart contract: createEscrow()
+User B → Claim → Submit work → Smart contract: submitWork()
+User A → Approve → Smart contract: releaseFunds()
+```
+5. Session Save to IPFS
+```bash
+Frontend → prepare session code blob
+→ API /upload-to-ipfs → Backend → Pinata API → Get CID
+→ Store CID on-chain via contract → Immutable record
+```
 
 ## Quick Start
 
