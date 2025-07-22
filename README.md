@@ -76,6 +76,8 @@ DAGVerse/
 - **Node.js** (v16 or higher)
 - **MongoDB** (running locally or cloud instance)
 - **Redis** (optional, for session storage)
+- **Docker**
+- **Make** ([Mac](https://formulae.brew.sh/formula/make) [Windows](https://stackoverflow.com/questions/2532234/how-to-run-a-makefile-in-windows))
 
 ### Installation
 
