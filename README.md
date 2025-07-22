@@ -294,7 +294,7 @@ Frontend → prepare session code blob
 
 ## Status
 
-- **Smart contract deployment:** In progress (BlockDAG testnet integration planned)
+- **Smart contract deployment:** Deployed (BlockDAG testnet integration)
 - **Live demo:** Coming soon
 - **Demo video:** [https://youtu.be/RXWu7r9pr6s]
 - **Deployed contract address:** 
