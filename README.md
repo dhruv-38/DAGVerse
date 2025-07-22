@@ -107,7 +107,7 @@ DAGVerse/
    ```bash
       Double-click to run, or run in Command Prompt -- docker_pull_images.bat
    ```
-   **MakeFile**
+   **MakeFile
    ```bash
       make
    ```
