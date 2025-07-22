@@ -123,7 +123,8 @@ DAGVerse/
    Username: admin
    Password: admin123
    
-  | 🔒 You can change these credentials in the docker-compose.yml file under the mongo-express service.
+   | 🔒 You can change these credentials in the docker-compose.yml file under the mongo-express service.
+
    Access to your MongoDB via IP 127.0.0.1 and port 27017
 
 6. **Set up environment variables**
