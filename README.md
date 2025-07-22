@@ -121,6 +121,7 @@ DAGVerse/
    Visit http://localhost:8082 in your browser.
    
    Username: admin
+
    Password: admin123
    
    | 🔒 You can change these credentials in the docker-compose.yml file under the mongo-express service.
