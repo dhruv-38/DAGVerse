@@ -211,6 +211,7 @@ DAGVerse/
 ## 📝 License
 
 This project is part of the DAGVerse hackathon project.
+see License [here](LICENSE.md)
 
 ## 🆘 Support
 
