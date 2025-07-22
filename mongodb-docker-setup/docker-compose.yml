@@ -9,6 +9,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     volumes:
       - mongo_data:/data/db
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - backend
     healthcheck:
