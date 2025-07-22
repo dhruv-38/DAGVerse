@@ -142,12 +142,7 @@ DAGVerse/
    mongod
    ```
 
-7. **Start Redis** (optional, for sessions)
-   ```bash
-   redis-server
-   ```
-
-8. **Start both frontend and backend**
+7. **Start both frontend and backend**
    ```bash
    npm run dev
    ```
@@ -181,7 +176,6 @@ DAGVerse/
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `GET /api/user/profile` - Get user profile
-- `PUT /api/user/profile` - Update user profile
 - `GET /api/health` - Server health status
 
 ## Status
