@@ -103,20 +103,21 @@ DAGVerse/
    MONGO_PASSWORD=StrongRootPass123
    MONGO_DB=dagverse
    ```
-   **For Mac 
+   **For Mac**
    ```bash
       chmod +x docker_pull_images.sh
       ./docker_pull_images.sh
    ```
-   **For Windows 
+   **For Windows**
    ```bash
       Double-click to run, or run in Command Prompt -- docker_pull_images.bat
    ```
-   **MakeFile
+   **MakeFile**
    ```bash
       make
    ```
 4. Access Mongo Express Web UI
+
    Visit http://localhost:8082 in your browser.
    Username: admin
    Password: admin123
