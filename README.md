@@ -187,7 +187,7 @@ DAGVerse/
 
 - **Smart contract deployment:** In progress (BlockDAG testnet integration planned)
 - **Live demo:** Coming soon
-- **Demo video:** [(https://youtu.be/RXWu7r9pr6s)]
+- **Demo video:** [https://youtu.be/RXWu7r9pr6s]
 - **Deployed contract address:** 
 
    [SessionLog.sol-0xeBE423bb8385cFF5fAD469464faB81a783ee244a] 
