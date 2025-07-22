@@ -205,6 +205,12 @@ For questions or issues:
 2. Review existing issues
 3. Create a new issue with details
 
+## Team
+- Dhruv Choudhary - https://www.linkedin.com/in/dhruvchoudhary38/ 
+- Siddhi Bansal  - https://www.linkedin.com/in/siddhi-bansal-081891246/
+- Sreedhar Reddy - https://www.linkedin.com/in/sreedhar-reddy-munagala/
+- Sunny Patel - https://www.linkedin.com/in/sunnythepatel/ 
+
 ---
 
 **Happy coding with DAGVerse! 🚀**
